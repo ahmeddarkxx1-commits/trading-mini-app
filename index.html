@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GO OS - AI Trading Co-Pilot</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #0f172a);
+      --text-color: var(--tg-theme-text-color, #f8fafc);
+      --secondary-bg: var(--tg-theme-secondary-bg-color, #1e293b);
+      --hint-color: var(--tg-theme-hint-color, #94a3b8);
+      --button-color: var(--tg-theme-button-color, #38bdf8);
+      --button-text-color: var(--tg-theme-button-text-color, #0f172a);
+      --accent-glow: rgba(56, 189, 248, 0.2);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header Section */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+    }
+
+    .avatar-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .header-info h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-color);
+      letter-spacing: -0.3px;
+    }
+
+    .header-info p {
+      font-size: 0.8rem;
+      color: var(--hint-color);
+      margin-top: 2px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .section-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--hint-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Style selector buttons */
+    .style-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .style-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 6px;
+      color: var(--text-color);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .style-btn .timeframe {
+      font-size: 0.7rem;
+      color: var(--hint-color);
+      font-weight: 400;
+    }
+
+    .style-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--button-color);
+      color: var(--button-color);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
+    .style-btn.active .timeframe {
+      color: var(--button-color);
+      opacity: 0.85;
+    }
+
+    /* Input fields */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 14px;
+      font-size: 1.1rem;
+      color: var(--hint-color);
+      pointer-events: none;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 42px 12px 14px;
+      color: var(--text-color);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--button-color);
+    }
+
+    /* Quick Suggestion Chips */
+    .chips-container {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: var(--hint-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover, .chip.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--button-color);
+      border-color: var(--button-color);
+    }
+
+    /* Shariah Switch Toggle */
+    .shariah-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 14px;
+    }
+
+    .shariah-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .shariah-icon {
+      font-size: 1.3rem;
+    }
+
+    .shariah-text h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    .shariah-text p {
+      font-size: 0.72rem;
+      color: var(--hint-color);
+    }
+
+    /* Switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s;
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald-glow);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    /* AI Badge Glass Card */
+    .ai-badge {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(129, 140, 248, 0.08));
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ai-badge-icon {
+      font-size: 1.5rem;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .ai-badge-text {
+      font-size: 0.78rem;
+      color: var(--hint-color);
+      line-height: 1.45;
+    }
+
+    .ai-badge-text strong {
+      color: var(--button-color);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .fallback-btn {
+      width: 100%;
+      background: var(--button-color);
+      color: var(--button-text-color);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="avatar-icon">🤖</div>
+    <div class="header-info">
+      <h1>GO OS - AI Trading Co-Pilot</h1>
+      <p>تحليل الأسعار المباشرة والمؤشرات وإدارة المخاطر 1%</p>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card">
+    <div class="section-title">
+      <span>🎯 نمط التداول والشمعات</span>
+    </div>
+    
+    <div class="style-selector">
+      <button type="button" class="style-btn active" data-style="Scalping">
+        <span>⚡ سريع</span>
+        <span class="timeframe">(1m / 5m)</span>
+      </button>
+      <button type="button" class="style-btn" data-style="Day Trading">
+        <span>📈 يومي</span>
+        <span class="timeframe">(15m / 1h)</span>
+      </button>
+      <button type="button" class="style-btn" data-style="Swing">
+        <span>🌊 طويل</span>
+        <span class="timeframe">(4h / 1D)</span>
+      </button>
+    </div>
+
+    <!-- Symbol Input & Suggestions -->
+    <div class="input-group">
+      <label for="symbol">الزوج / الأداة المباشرة</label>
+      <div class="input-wrapper">
+        <span class="input-icon">💱</span>
+        <input type="text" id="symbol" class="input-field" placeholder="BTC/USDT أو XAU/USD" value="BTC/USDT">
+      </div>
+      <div class="chips-container">
+        <div class="chip active" onclick="selectChip('BTC/USDT')">BTC/USDT</div>
+        <div class="chip" onclick="selectChip('XAU/USD')">XAU/USD (ذهب)</div>
+        <div class="chip" onclick="selectChip('EUR/USD')">EUR/USD</div>
+        <div class="chip" onclick="selectChip('ETH/USDT')">ETH/USDT</div>
+        <div class="chip" onclick="selectChip('SOL/USDT')">SOL/USDT</div>
+      </div>
+    </div>
+
+    <!-- Capital Input -->
+    <div class="input-group">
+      <label for="capital">ميزانية المحفظة بالدولار ($)</label>
+      <div class="input-wrapper">
+        <span class="input-icon">💰</span>
+        <input type="number" id="capital" class="input-field" placeholder="1000" value="1000" min="10">
+      </div>
+    </div>
+
+    <!-- Shariah Switch -->
+    <div class="shariah-row">
+      <div class="shariah-info">
+        <span class="shariah-icon">🌙</span>
+        <div class="shariah-text">
+          <h4>الفلترة المتوافقة مع الشريعة</h4>
+          <p>استبعاد الأصول المحرمة أو الرافعة الربوية</p>
+        </div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="shariahToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Realtime AI Card -->
+  <div class="card">
+    <div class="ai-badge">
+      <div class="ai-badge-icon">📊</div>
+      <div class="ai-badge-text">
+        سيتم جلب <strong>الأسعار الحية و OHLCV</strong> لحظياً وحساب <strong>RSI (14) & EMA (9/21) & ATR</strong> وتغذية <strong>Gemini 1.5 Flash</strong> بحساب مخاطرة 1%.
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback button for desktop browsers -->
+  <button id="fallbackBtn" class="fallback-btn">
+    🚀 إرسال البيانات وتحليل السوق
+  </button>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    let selectedStyle = 'Scalping';
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    const styleBtns = document.querySelectorAll('.style-btn');
+    styleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        styleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedStyle = btn.getAttribute('data-style');
+        validateAndShowButton();
+      });
+    });
+
+    const symbolInput = document.getElementById('symbol');
+    const capitalInput = document.getElementById('capital');
+    const shariahToggle = document.getElementById('shariahToggle');
+    const fallbackBtn = document.getElementById('fallbackBtn');
+
+    function selectChip(sym) {
+      symbolInput.value = sym;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      validateAndShowButton();
+    }
+
+    function getFormData() {
+      return {
+        style: selectedStyle,
+        symbol: symbolInput.value.trim().toUpperCase() || 'BTC/USDT',
+        capital: parseFloat(capitalInput.value) || 1000,
+        shariah_aware: shariahToggle.checked
+      };
+    }
+
+    function validateAndShowButton() {
+      const capitalVal = parseFloat(capitalInput.value);
+      const symbolVal = symbolInput.value.trim();
+      const isValid = symbolVal.length > 0 && !isNaN(capitalVal) && capitalVal > 0;
+
+      if (tg && tg.MainButton) {
+        tg.MainButton.setText('تحليل السوق وإدارة المخاطر 🚀');
+        tg.MainButton.setParams({
+          color: '#38bdf8',
+          text_color: '#0f172a'
+        });
+
+        if (isValid) tg.MainButton.show(); else tg.MainButton.hide();
+      } else {
+        fallbackBtn.style.display = isValid ? 'flex' : 'none';
+      }
+    }
+
+    function submitData() {
+      const data = getFormData();
+      const payload = JSON.stringify(data);
+
+      if (tg && tg.sendData) {
+        tg.sendData(payload);
+        tg.close();
+      } else {
+        alert('تم إرسال الطلب:\n' + JSON.stringify(data, null, 2));
+      }
+    }
+
+    symbolInput.addEventListener('input', validateAndShowButton);
+    capitalInput.addEventListener('input', validateAndShowButton);
+    shariahToggle.addEventListener('change', validateAndShowButton);
+
+    if (tg && tg.MainButton) {
+      tg.MainButton.onClick(submitData);
+    }
+    fallbackBtn.addEventListener('click', submitData);
+
+    validateAndShowButton();
+  </script>
+</body>
+</html>
