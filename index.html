@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GO OS - AI Trading Co-Pilot</title>
+  <title>GO OS | AI Trading Co-Pilot</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: var(--tg-theme-bg-color, #0f172a);
-      --text-color: var(--tg-theme-text-color, #f8fafc);
-      --secondary-bg: var(--tg-theme-secondary-bg-color, #1e293b);
-      --hint-color: var(--tg-theme-hint-color, #94a3b8);
-      --button-color: var(--tg-theme-button-color, #38bdf8);
-      --button-text-color: var(--tg-theme-button-text-color, #0f172a);
-      --accent-glow: rgba(56, 189, 248, 0.2);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(30, 41, 59, 0.75);
-      --emerald: #10b981;
-      --emerald-glow: rgba(16, 185, 129, 0.2);
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --cyan-neon: #38bdf8;
+      --violet-neon: #818cf8;
+      --emerald-neon: #10b981;
+      --glass-bg: rgba(30, 41, 59, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-glow: rgba(56, 189, 248, 0.18);
+      --input-bg: rgba(15, 23, 42, 0.65);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background: var(--bg-gradient);
+      color: var(--text-main);
       min-height: 100vh;
       padding: 16px;
       display: flex;
@@ -38,82 +40,109 @@
       gap: 16px;
     }
 
-    /* Header Section */
+    /* Glass Card Base */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Header */
     .header {
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 14px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
-      border-radius: 18px;
     }
 
-    .avatar-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #38bdf8, #818cf8);
+    .app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 26px;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      box-shadow: 0 0 20px var(--glass-glow);
     }
 
-    .header-info h1 {
+    .header-text h1 {
       font-size: 1.15rem;
       font-weight: 800;
-      color: var(--text-color);
-      letter-spacing: -0.3px;
+      letter-spacing: -0.4px;
+      background: linear-gradient(135deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .header-info p {
-      font-size: 0.8rem;
-      color: var(--hint-color);
+    .header-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
       margin-top: 2px;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 16px;
       display: flex;
-      flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      align-items: center;
+      gap: 6px;
     }
 
-    .section-title {
-      font-size: 0.82rem;
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--emerald-neon);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--emerald-neon);
+      animation: blink 1.8s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Section Headings */
+    .label-title {
+      font-size: 0.78rem;
       font-weight: 700;
-      color: var(--hint-color);
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    /* Style selector buttons */
-    .style-selector {
+    /* Strategy Selector Tabs */
+    .tab-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
-    .style-btn {
+    .tab-btn {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--glass-border);
       border-radius: 14px;
       padding: 12px 6px;
-      color: var(--text-color);
+      color: var(--text-main);
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
@@ -121,38 +150,32 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .style-btn .timeframe {
-      font-size: 0.7rem;
-      color: var(--hint-color);
+    .tab-btn .sub-text {
+      font-size: 0.68rem;
+      color: var(--text-muted);
       font-weight: 400;
     }
 
-    .style-btn.active {
-      background: rgba(56, 189, 248, 0.15);
-      border-color: var(--button-color);
-      color: var(--button-color);
-      box-shadow: 0 0 14px var(--accent-glow);
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(129, 140, 248, 0.15));
+      border-color: var(--cyan-neon);
+      color: var(--cyan-neon);
+      box-shadow: 0 0 16px var(--glass-glow);
     }
 
-    .style-btn.active .timeframe {
-      color: var(--button-color);
+    .tab-btn.active .sub-text {
+      color: var(--cyan-neon);
       opacity: 0.85;
     }
 
-    /* Input fields */
-    .input-group {
+    /* Inputs */
+    .input-field-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
-    }
-
-    .input-group label {
-      font-size: 0.8rem;
-      color: var(--text-color);
-      font-weight: 600;
     }
 
     .input-wrapper {
@@ -163,55 +186,84 @@
 
     .input-icon {
       position: absolute;
-      right: 14px;
+      left: 14px;
       font-size: 1.1rem;
-      color: var(--hint-color);
+      color: var(--text-muted);
       pointer-events: none;
     }
 
-    .input-field {
+    .custom-input {
       width: 100%;
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 14px;
-      padding: 12px 42px 12px 14px;
-      color: var(--text-color);
+      padding: 13px 14px 13px 44px;
+      color: var(--text-main);
       font-size: 0.95rem;
+      font-weight: 600;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.25s ease;
     }
 
-    .input-field:focus {
-      border-color: var(--button-color);
+    .custom-input:focus {
+      border-color: var(--cyan-neon);
+      box-shadow: 0 0 12px var(--glass-glow);
     }
 
-    /* Quick Suggestion Chips */
-    .chips-container {
+    /* Category Chips */
+    .category-tabs {
       display: flex;
       gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 4px;
+      margin-bottom: 4px;
     }
 
-    .chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
+    .cat-tab {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
       border-radius: 20px;
       padding: 4px 10px;
-      font-size: 0.75rem;
-      color: var(--hint-color);
+      font-size: 0.72rem;
+      color: var(--text-muted);
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .chip:hover, .chip.active {
+    .cat-tab.active {
       background: rgba(56, 189, 248, 0.15);
-      color: var(--button-color);
-      border-color: var(--button-color);
+      color: var(--cyan-neon);
+      border-color: var(--cyan-neon);
     }
 
-    /* Shariah Switch Toggle */
-    .shariah-row {
+    .chips-flex {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip-btn:hover, .chip-btn.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--cyan-neon);
+      color: var(--cyan-neon);
+      box-shadow: 0 0 10px var(--glass-glow);
+    }
+
+    /* Halal Glass Switch Row */
+    .halal-glass-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -221,52 +273,52 @@
       border-radius: 14px;
     }
 
-    .shariah-info {
+    .halal-details {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .shariah-icon {
+    .halal-icon {
       font-size: 1.3rem;
     }
 
-    .shariah-text h4 {
-      font-size: 0.85rem;
+    .halal-text h4 {
+      font-size: 0.84rem;
       font-weight: 700;
-      color: var(--emerald);
+      color: var(--emerald-neon);
     }
 
-    .shariah-text p {
-      font-size: 0.72rem;
-      color: var(--hint-color);
+    .halal-text p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
     }
 
-    /* Switch styling */
-    .switch {
+    /* Toggle Switch */
+    .switch-toggle {
       position: relative;
       display: inline-block;
       width: 44px;
       height: 24px;
     }
 
-    .switch input {
+    .switch-toggle input {
       opacity: 0;
       width: 0;
       height: 0;
     }
 
-    .slider {
+    .slider-round {
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(255, 255, 255, 0.1);
       transition: .3s;
       border-radius: 24px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--glass-border);
     }
 
-    .slider:before {
+    .slider-round:before {
       position: absolute;
       content: "";
       height: 18px;
@@ -278,150 +330,159 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
-      background-color: var(--emerald);
-      box-shadow: 0 0 10px var(--emerald-glow);
+    input:checked + .slider-round {
+      background-color: var(--emerald-neon);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
     }
 
-    input:checked + .slider:before {
+    input:checked + .slider-round:before {
       transform: translateX(18px);
     }
 
-    /* AI Badge Glass Card */
-    .ai-badge {
+    /* AI Live Badge Card */
+    .ai-live-card {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(129, 140, 248, 0.08));
       border: 1px dashed rgba(56, 189, 248, 0.3);
-      border-radius: 14px;
-      padding: 12px;
+      border-radius: 16px;
+      padding: 14px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .ai-badge-icon {
+    .ai-icon-anim {
       font-size: 1.5rem;
-      animation: pulse 2s infinite ease-in-out;
+      animation: pulseGlow 2s infinite ease-in-out;
     }
 
-    .ai-badge-text {
+    .ai-card-text {
       font-size: 0.78rem;
-      color: var(--hint-color);
+      color: var(--text-muted);
       line-height: 1.45;
     }
 
-    .ai-badge-text strong {
-      color: var(--button-color);
+    .ai-card-text strong {
+      color: var(--cyan-neon);
     }
 
-    @keyframes pulse {
+    @keyframes pulseGlow {
       0%, 100% { transform: scale(1); opacity: 0.85; }
       50% { transform: scale(1.1); opacity: 1; }
     }
 
+    /* Fallback button for standalone browser viewing */
     .fallback-btn {
       width: 100%;
-      background: var(--button-color);
-      color: var(--button-text-color);
+      background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
+      color: #020617;
       border: none;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 15px;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       display: none;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      box-shadow: 0 4px 20px var(--glass-glow);
     }
   </style>
 </head>
 <body>
 
   <!-- Header -->
-  <div class="header">
-    <div class="avatar-icon">🤖</div>
-    <div class="header-info">
-      <h1>GO OS - AI Trading Co-Pilot</h1>
-      <p>تحليل الأسعار المباشرة والمؤشرات وإدارة المخاطر 1%</p>
+  <div class="glass-card header">
+    <div class="app-icon">🤖</div>
+    <div class="header-text">
+      <h1>GO OS | AI Co-Pilot</h1>
+      <p><span class="live-dot"></span> Live Market Infrastructure Stream</p>
     </div>
   </div>
 
-  <!-- Form Card -->
-  <div class="card">
-    <div class="section-title">
-      <span>🎯 نمط التداول والشمعات</span>
+  <!-- Main Config Card -->
+  <div class="glass-card">
+    <div class="label-title">
+      <span>🎯 Trading Style & Timeframe</span>
     </div>
     
-    <div class="style-selector">
-      <button type="button" class="style-btn active" data-style="Scalping">
-        <span>⚡ سريع</span>
-        <span class="timeframe">(1m / 5m)</span>
+    <div class="tab-grid">
+      <button type="button" class="tab-btn active" data-style="Scalping">
+        <span>⚡ Scalp</span>
+        <span class="sub-text">1m / 5m</span>
       </button>
-      <button type="button" class="style-btn" data-style="Day Trading">
-        <span>📈 يومي</span>
-        <span class="timeframe">(15m / 1h)</span>
+      <button type="button" class="tab-btn" data-style="Day Trading">
+        <span>📈 Day</span>
+        <span class="sub-text">15m / 1h</span>
       </button>
-      <button type="button" class="style-btn" data-style="Swing">
-        <span>🌊 طويل</span>
-        <span class="timeframe">(4h / 1D)</span>
+      <button type="button" class="tab-btn" data-style="Swing">
+        <span>🌊 Swing</span>
+        <span class="sub-text">4h / 1D</span>
       </button>
     </div>
 
-    <!-- Symbol Input & Suggestions -->
-    <div class="input-group">
-      <label for="symbol">الزوج / الأداة المباشرة</label>
+    <!-- Asset Selection Input -->
+    <div class="input-field-group">
+      <div class="label-title">
+        <span>💱 Symbol / Asset</span>
+      </div>
       <div class="input-wrapper">
-        <span class="input-icon">💱</span>
-        <input type="text" id="symbol" class="input-field" placeholder="BTC/USDT أو XAU/USD" value="BTC/USDT">
+        <span class="input-icon">📊</span>
+        <input type="text" id="pairInput" class="custom-input" placeholder="BTC/USDT, XAU/USD, NVDA, US30" value="BTC/USDT">
       </div>
-      <div class="chips-container">
-        <div class="chip active" onclick="selectChip('BTC/USDT')">BTC/USDT</div>
-        <div class="chip" onclick="selectChip('XAU/USD')">XAU/USD (ذهب)</div>
-        <div class="chip" onclick="selectChip('EUR/USD')">EUR/USD</div>
-        <div class="chip" onclick="selectChip('ETH/USDT')">ETH/USDT</div>
-        <div class="chip" onclick="selectChip('SOL/USDT')">SOL/USDT</div>
+
+      <!-- Asset Category Tabs & Chips -->
+      <div class="category-tabs" style="margin-top: 6px;">
+        <div class="cat-tab active" onclick="switchCategory('crypto')">Crypto 🪙</div>
+        <div class="cat-tab" onclick="switchCategory('forex')">Forex & Gold 🏆</div>
+        <div class="cat-tab" onclick="switchCategory('us_stocks')">US Stocks & Indices 🇺🇸</div>
+      </div>
+
+      <div id="chipsContainer" class="chips-flex">
+        <!-- Dynamically rendered chips -->
       </div>
     </div>
 
-    <!-- Capital Input -->
-    <div class="input-group">
-      <label for="capital">ميزانية المحفظة بالدولار ($)</label>
+    <!-- Capital / Budget Input -->
+    <div class="input-field-group">
+      <div class="label-title">
+        <span>💰 Account Capital ($)</span>
+      </div>
       <div class="input-wrapper">
-        <span class="input-icon">💰</span>
-        <input type="number" id="capital" class="input-field" placeholder="1000" value="1000" min="10">
+        <span class="input-icon">💵</span>
+        <input type="number" id="budgetInput" class="custom-input" placeholder="1000" value="1000" min="10">
       </div>
     </div>
 
-    <!-- Shariah Switch -->
-    <div class="shariah-row">
-      <div class="shariah-info">
-        <span class="shariah-icon">🌙</span>
-        <div class="shariah-text">
-          <h4>الفلترة المتوافقة مع الشريعة</h4>
-          <p>استبعاد الأصول المحرمة أو الرافعة الربوية</p>
+    <!-- Halal / Shariah Filter -->
+    <div class="halal-glass-row">
+      <div class="halal-details">
+        <span class="halal-icon">🌙</span>
+        <div class="halal-text">
+          <h4>Halal / Shariah Compliance Filter</h4>
+          <p>Filter interest-bearing protocols & unbacked leverage</p>
         </div>
       </div>
-      <label class="switch">
+      <label class="switch-toggle">
         <input type="checkbox" id="shariahToggle" checked>
-        <span class="slider"></span>
+        <span class="slider-round"></span>
       </label>
     </div>
   </div>
 
-  <!-- Realtime AI Card -->
-  <div class="card">
-    <div class="ai-badge">
-      <div class="ai-badge-icon">📊</div>
-      <div class="ai-badge-text">
-        سيتم جلب <strong>الأسعار الحية و OHLCV</strong> لحظياً وحساب <strong>RSI (14) & EMA (9/21) & ATR</strong> وتغذية <strong>Gemini 1.5 Flash</strong> بحساب مخاطرة 1%.
+  <!-- AI Information Glass Card -->
+  <div class="glass-card">
+    <div class="ai-live-card">
+      <div class="ai-icon-anim">⚡</div>
+      <div class="ai-card-text">
+        Powered by <strong>Gemini 1.5 Flash Reasoning Engine</strong>. Automatically computes exact <strong>1% Risk Engine</strong> lot sizing & live <strong>RSI / EMA / ATR</strong> indicators.
       </div>
     </div>
   </div>
 
-  <!-- Fallback button for desktop browsers -->
+  <!-- Standalone Browser Fallback Button -->
   <button id="fallbackBtn" class="fallback-btn">
-    🚀 إرسال البيانات وتحليل السوق
+    🚀 Analyze Market & Calculate Risk
   </button>
 
   <script>
@@ -433,47 +494,78 @@
       tg.expand();
     }
 
-    const styleBtns = document.querySelectorAll('.style-btn');
-    styleBtns.forEach(btn => {
+    // Asset Lists
+    const assetCategories = {
+      crypto: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT'],
+      forex: ['XAU/USD', 'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD'],
+      us_stocks: ['NVDA', 'TSLA', 'AAPL', 'NAS100', 'US30', 'SPX500', 'AMZN', 'MSFT']
+    };
+
+    let currentCategory = 'crypto';
+
+    function renderChips(catKey) {
+      const container = document.getElementById('chipsContainer');
+      container.innerHTML = '';
+      const list = assetCategories[catKey] || [];
+      list.forEach((symbol, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'chip-btn' + (symbol === pairInput.value ? ' active' : '');
+        btn.innerText = symbol;
+        btn.onclick = () => selectSymbol(symbol, btn);
+        container.appendChild(btn);
+      });
+    }
+
+    function switchCategory(catKey) {
+      currentCategory = catKey;
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      if (event && event.target) event.target.classList.add('active');
+      renderChips(catKey);
+    }
+
+    function selectSymbol(sym, el) {
+      document.getElementById('pairInput').value = sym;
+      document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      validateAndShowButton();
+    }
+
+    // Strategy Button Listeners
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        styleBtns.forEach(b => b.classList.remove('active'));
+        tabBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedStyle = btn.getAttribute('data-style');
         validateAndShowButton();
       });
     });
 
-    const symbolInput = document.getElementById('symbol');
-    const capitalInput = document.getElementById('capital');
+    const pairInput = document.getElementById('pairInput');
+    const budgetInput = document.getElementById('budgetInput');
     const shariahToggle = document.getElementById('shariahToggle');
     const fallbackBtn = document.getElementById('fallbackBtn');
 
-    function selectChip(sym) {
-      symbolInput.value = sym;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      event.target.classList.add('active');
-      validateAndShowButton();
-    }
-
-    function getFormData() {
+    function getPayload() {
       return {
-        style: selectedStyle,
-        symbol: symbolInput.value.trim().toUpperCase() || 'BTC/USDT',
-        capital: parseFloat(capitalInput.value) || 1000,
-        shariah_aware: shariahToggle.checked
+        action: "ANALYZE_TRADE",
+        strategy: selectedStyle,
+        pair: pairInput.value.trim().toUpperCase() || 'BTC/USDT',
+        budget: parseFloat(budgetInput.value) || 1000,
+        shariah_aware: shariahToggle ? shariahToggle.checked : true
       };
     }
 
     function validateAndShowButton() {
-      const capitalVal = parseFloat(capitalInput.value);
-      const symbolVal = symbolInput.value.trim();
-      const isValid = symbolVal.length > 0 && !isNaN(capitalVal) && capitalVal > 0;
+      const budgetVal = parseFloat(budgetInput.value);
+      const pairVal = pairInput.value.trim();
+      const isValid = pairVal.length > 0 && !isNaN(budgetVal) && budgetVal > 0;
 
       if (tg && tg.MainButton) {
-        tg.MainButton.setText('تحليل السوق وإدارة المخاطر 🚀');
+        tg.MainButton.setText('🚀 ANALYZE & CALCULATE 1% RISK');
         tg.MainButton.setParams({
           color: '#38bdf8',
-          text_color: '#0f172a'
+          text_color: '#020617'
         });
 
         if (isValid) tg.MainButton.show(); else tg.MainButton.hide();
@@ -483,26 +575,26 @@
     }
 
     function submitData() {
-      const data = getFormData();
-      const payload = JSON.stringify(data);
+      const payload = getPayload();
+      const jsonString = JSON.stringify(payload);
 
       if (tg && tg.sendData) {
-        tg.sendData(payload);
+        tg.sendData(jsonString);
         tg.close();
       } else {
-        alert('تم إرسال الطلب:\n' + JSON.stringify(data, null, 2));
+        alert('Payload Sent:\n' + JSON.stringify(payload, null, 2));
       }
     }
 
-    symbolInput.addEventListener('input', validateAndShowButton);
-    capitalInput.addEventListener('input', validateAndShowButton);
+    pairInput.addEventListener('input', validateAndShowButton);
+    budgetInput.addEventListener('input', validateAndShowButton);
     shariahToggle.addEventListener('change', validateAndShowButton);
 
-    if (tg && tg.MainButton) {
-      tg.MainButton.onClick(submitData);
-    }
+    if (tg && tg.MainButton) tg.MainButton.onClick(submitData);
     fallbackBtn.addEventListener('click', submitData);
 
+    // Init
+    renderChips('crypto');
     validateAndShowButton();
   </script>
 </body>
