@@ -3,114 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GO OS | AI Trading Co-Pilot</title>
+  <title>TRAD | AI Co-Pilot & Institutional Trading Terminal</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-glow: rgba(56, 189, 248, 0.12);
+      
       --cyan-neon: #38bdf8;
       --violet-neon: #818cf8;
       --emerald-neon: #10b981;
-      --glass-bg: rgba(30, 41, 59, 0.55);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --glass-glow: rgba(56, 189, 248, 0.18);
-      --input-bg: rgba(15, 23, 42, 0.65);
+      --amber-gold: #fbbf24;
+      --rose-neon: #f43f5e;
+      
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #64748b;
+      
+      --input-bg: rgba(2, 6, 23, 0.75);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
       background: var(--bg-gradient);
       color: var(--text-main);
       min-height: 100vh;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Glass Card Base */
-    .glass-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 18px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-      position: relative;
-      overflow: hidden;
+      padding-bottom: 24px;
     }
 
-    .glass-card::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%);
-      pointer-events: none;
-    }
-
-    /* Header */
-    .header {
+    /* VIP Top Status Banner */
+    .vip-status-bar {
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.15), rgba(56, 189, 248, 0.15));
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 12px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--amber-gold);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.12);
     }
 
-    .app-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 0 20px var(--glass-glow);
-    }
-
-    .header-text h1 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      background: linear-gradient(135deg, #ffffff, #cbd5e1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header-text p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .vip-badge {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .live-dot {
-      width: 8px;
-      height: 8px;
+    .vip-ping {
+      width: 6px;
+      height: 6px;
+      background-color: var(--amber-gold);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--amber-gold);
+      animation: pulsePing 1.5s infinite;
+    }
+
+    @keyframes pulsePing {
+      0% { transform: scale(0.9); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.5; }
+      100% { transform: scale(0.9); opacity: 1; }
+    }
+
+    /* Glass Card Standard Container */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    }
+
+    /* Header Component */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .header-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live-indicator {
+      width: 7px;
+      height: 7px;
       background-color: var(--emerald-neon);
       border-radius: 50%;
       box-shadow: 0 0 10px var(--emerald-neon);
-      animation: blink 1.8s infinite ease-in-out;
+      animation: blink 2s infinite ease-in-out;
     }
 
     @keyframes blink {
@@ -119,32 +171,41 @@
     }
 
     /* Section Headings */
-    .label-title {
-      font-size: 0.78rem;
+    .section-title {
+      font-size: 0.74rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    /* Strategy Selector Tabs */
-    .tab-grid {
+    .section-title span.badge {
+      font-size: 0.65rem;
+      color: var(--cyan-neon);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    /* Strategy Selector Tabs Grid */
+    .strategy-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
-    .tab-btn {
+    .strategy-card {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
       padding: 12px 6px;
-      color: var(--text-main);
-      font-size: 0.8rem;
-      font-weight: 600;
+      color: var(--text-sub);
+      font-size: 0.82rem;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -153,26 +214,30 @@
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .tab-btn .sub-text {
+    .strategy-card .timeframe-text {
       font-size: 0.68rem;
       color: var(--text-muted);
-      font-weight: 400;
+      font-weight: 500;
     }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(129, 140, 248, 0.15));
+    .strategy-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .strategy-card.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(129, 140, 248, 0.18));
       border-color: var(--cyan-neon);
-      color: var(--cyan-neon);
-      box-shadow: 0 0 16px var(--glass-glow);
+      color: #ffffff;
+      box-shadow: 0 0 20px var(--card-glow);
     }
 
-    .tab-btn.active .sub-text {
+    .strategy-card.active .timeframe-text {
       color: var(--cyan-neon);
-      opacity: 0.85;
+      font-weight: 600;
     }
 
-    /* Inputs */
-    .input-field-group {
+    /* Custom Input Fields */
+    .input-field-box {
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -192,106 +257,143 @@
       pointer-events: none;
     }
 
-    .custom-input {
+    .styled-input {
       width: 100%;
       background: var(--input-bg);
-      border: 1px solid var(--glass-border);
+      border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 13px 14px 13px 44px;
+      padding: 14px 14px 14px 44px;
       color: var(--text-main);
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       outline: none;
       transition: all 0.25s ease;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .custom-input:focus {
+    .styled-input:focus {
       border-color: var(--cyan-neon);
-      box-shadow: 0 0 12px var(--glass-glow);
+      box-shadow: 0 0 16px var(--card-glow);
+      background: rgba(15, 23, 42, 0.95);
     }
 
-    /* Category Chips */
-    .category-tabs {
+    /* Asset Category Pills & Chips */
+    .category-pills {
       display: flex;
       gap: 6px;
-      margin-bottom: 4px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
     }
 
-    .cat-tab {
+    .category-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pill-btn {
       background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--glass-border);
+      border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       font-size: 0.72rem;
+      font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
-      transition: all 0.2s;
+      white-space: nowrap;
+      transition: all 0.2s ease;
     }
 
-    .cat-tab.active {
-      background: rgba(56, 189, 248, 0.15);
+    .pill-btn.active {
+      background: rgba(56, 189, 248, 0.16);
       color: var(--cyan-neon);
       border-color: var(--cyan-neon);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
     }
 
-    .chips-flex {
+    .symbols-chips-flex {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
     }
 
-    .chip-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--glass-border);
+    .symbol-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 6px 12px;
       font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 700;
+      color: var(--text-sub);
       cursor: pointer;
       transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .chip-btn:hover, .chip-btn.active {
+    .symbol-chip:hover, .symbol-chip.active {
       background: rgba(56, 189, 248, 0.18);
       border-color: var(--cyan-neon);
       color: var(--cyan-neon);
-      box-shadow: 0 0 10px var(--glass-glow);
+      box-shadow: 0 0 12px var(--card-glow);
+    }
+
+    /* Capital Presets Buttons */
+    .capital-presets {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .preset-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 5px 0;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--violet-neon);
+      color: var(--violet-neon);
     }
 
     /* Halal Glass Switch Row */
-    .halal-glass-row {
+    .halal-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 14px;
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.04));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
     }
 
-    .halal-details {
+    .halal-meta {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
     .halal-icon {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
+      color: var(--emerald-neon);
     }
 
-    .halal-text h4 {
+    .halal-info h4 {
       font-size: 0.84rem;
       font-weight: 700;
       color: var(--emerald-neon);
     }
 
-    .halal-text p {
-      font-size: 0.7rem;
+    .halal-info p {
+      font-size: 0.68rem;
       color: var(--text-muted);
+      margin-top: 1px;
     }
 
     /* Toggle Switch */
@@ -300,6 +402,7 @@
       display: inline-block;
       width: 44px;
       height: 24px;
+      flex-shrink: 0;
     }
 
     .switch-toggle input {
@@ -313,9 +416,9 @@
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(255, 255, 255, 0.1);
-      transition: .3s;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 24px;
-      border: 1px solid var(--glass-border);
+      border: 1px solid var(--card-border);
     }
 
     .slider-round:before {
@@ -323,144 +426,176 @@
       content: "";
       height: 18px;
       width: 18px;
-      left: 3px;
+      left: 2px;
       bottom: 2px;
-      background-color: white;
-      transition: .3s;
+      background-color: #ffffff;
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
     }
 
     input:checked + .slider-round {
       background-color: var(--emerald-neon);
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
     }
 
     input:checked + .slider-round:before {
-      transform: translateX(18px);
+      transform: translateX(20px);
     }
 
-    /* AI Live Badge Card */
-    .ai-live-card {
+    /* Institutional AI Badge Footer */
+    .ai-engine-banner {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(129, 140, 248, 0.08));
       border: 1px dashed rgba(56, 189, 248, 0.3);
       border-radius: 16px;
-      padding: 14px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .ai-icon-anim {
+    .ai-sparkle {
       font-size: 1.5rem;
-      animation: pulseGlow 2s infinite ease-in-out;
+      animation: pulseGlow 2.2s infinite ease-in-out;
     }
 
-    .ai-card-text {
-      font-size: 0.78rem;
+    .ai-banner-text {
+      font-size: 0.75rem;
       color: var(--text-muted);
       line-height: 1.45;
     }
 
-    .ai-card-text strong {
+    .ai-banner-text strong {
       color: var(--cyan-neon);
     }
 
     @keyframes pulseGlow {
       0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.1); opacity: 1; }
+      50% { transform: scale(1.12); opacity: 1; }
     }
 
-    /* Fallback button for standalone browser viewing */
-    .fallback-btn {
+    /* Primary Action Button (Fallback for Standalone Browsers) */
+    .btn-action-submit {
       width: 100%;
-      background: linear-gradient(135deg, var(--cyan-neon), var(--violet-neon));
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
       color: #020617;
       border: none;
       border-radius: 16px;
-      padding: 15px;
-      font-size: 1rem;
+      padding: 16px;
+      font-size: 0.98rem;
       font-weight: 800;
+      letter-spacing: -0.2px;
       cursor: pointer;
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 20px var(--glass-glow);
+      box-shadow: 0 6px 25px rgba(56, 189, 248, 0.35);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-action-submit:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 12px rgba(56, 189, 248, 0.2);
     }
   </style>
 </head>
 <body>
 
+  <!-- VIP Institutional Status Banner -->
+  <div class="vip-status-bar">
+    <div class="vip-badge">
+      <span class="vip-ping"></span>
+      <span>TRAD VIP INSTITUTIONAL TERMINAL v2.5</span>
+    </div>
+    <span>MT5 & 24/7 LIVE</span>
+  </div>
+
   <!-- Header -->
   <div class="glass-card header">
-    <div class="app-icon">🤖</div>
-    <div class="header-text">
-      <h1>TRAD | AI Co-Pilot</h1>
-      <p><span class="live-dot"></span> Live Market Infrastructure Stream</p>
+    <div class="app-avatar">🤖</div>
+    <div class="header-info">
+      <div class="header-title">TRAD | AI Co-Pilot</div>
+      <div class="header-sub">
+        <span class="live-indicator"></span>
+        <span>Institutional Multi-AI Consensus Engine</span>
+      </div>
     </div>
   </div>
 
-  <!-- Main Config Card -->
+  <!-- Trading Configuration Glass Card -->
   <div class="glass-card">
-    <div class="label-title">
+    <div class="section-title">
       <span>🎯 Trading Style & Timeframe</span>
+      <span class="badge">Dynamic Risk</span>
     </div>
     
-    <div class="tab-grid">
-      <button type="button" class="tab-btn active" data-style="Scalping">
+    <div class="strategy-grid">
+      <button type="button" class="strategy-card active" data-style="Scalping">
         <span>⚡ Scalp</span>
-        <span class="sub-text">1m / 5m</span>
+        <span class="timeframe-text">1m / 5m</span>
       </button>
-      <button type="button" class="tab-btn" data-style="Day Trading">
+      <button type="button" class="strategy-card" data-style="Day Trading">
         <span>📈 Day</span>
-        <span class="sub-text">15m / 1h</span>
+        <span class="timeframe-text">15m / 1h</span>
       </button>
-      <button type="button" class="tab-btn" data-style="Swing">
+      <button type="button" class="strategy-card" data-style="Swing">
         <span>🌊 Swing</span>
-        <span class="sub-text">4h / 1D</span>
+        <span class="timeframe-text">4h / 1D</span>
       </button>
     </div>
 
     <!-- Asset Selection Input -->
-    <div class="input-field-group">
-      <div class="label-title">
+    <div class="input-field-box">
+      <div class="section-title">
         <span>💱 Symbol / Asset</span>
+        <span class="badge">Spot & MT5</span>
       </div>
       <div class="input-wrapper">
-        <span class="input-icon">📊</span>
-        <input type="text" id="pairInput" class="custom-input" placeholder="BTC/USDT, XAU/USD, NVDA, US30" value="BTC/USDT">
+        <span class="input-icon">🔍</span>
+        <input type="text" id="pairInput" class="styled-input" placeholder="BTC/USDT, XAU/USD, NVDA, US30" value="BTC/USDT">
       </div>
 
-      <!-- Asset Category Tabs & Chips -->
-      <div class="category-tabs" style="margin-top: 6px;">
-        <div class="cat-tab active" onclick="switchCategory('crypto')">Crypto 🪙</div>
-        <div class="cat-tab" onclick="switchCategory('forex')">Forex & Gold 🏆</div>
-        <div class="cat-tab" onclick="switchCategory('us_stocks')">US Stocks & Indices 🇺🇸</div>
+      <!-- Asset Category Pills & Quick Symbol Chips -->
+      <div class="category-pills" style="margin-top: 6px;">
+        <div class="pill-btn active" onclick="switchCategory('crypto', this)">Crypto 🪙</div>
+        <div class="pill-btn" onclick="switchCategory('forex', this)">Forex & Gold 🏆</div>
+        <div class="pill-btn" onclick="switchCategory('us_stocks', this)">US Stocks & Indices 🇺🇸</div>
+        <div class="pill-btn" onclick="switchCategory('energy', this)">Oil & Commodities 🛢️</div>
       </div>
 
-      <div id="chipsContainer" class="chips-flex">
+      <div id="chipsContainer" class="symbols-chips-flex">
         <!-- Dynamically rendered chips -->
       </div>
     </div>
 
     <!-- Capital / Budget Input -->
-    <div class="input-field-group">
-      <div class="label-title">
+    <div class="input-field-box">
+      <div class="section-title">
         <span>💰 Account Capital ($)</span>
+        <span class="badge">1% Protection</span>
       </div>
       <div class="input-wrapper">
         <span class="input-icon">💵</span>
-        <input type="number" id="budgetInput" class="custom-input" placeholder="1000" value="1000" min="10">
+        <input type="number" id="budgetInput" class="styled-input" placeholder="1000" value="1000" min="10">
+      </div>
+      <div class="capital-presets">
+        <div class="preset-btn" onclick="setCapital(500)">$500</div>
+        <div class="preset-btn" onclick="setCapital(1000)">$1,000</div>
+        <div class="preset-btn" onclick="setCapital(5000)">$5,000</div>
+        <div class="preset-btn" onclick="setCapital(10000)">$10,000</div>
+        <div class="preset-btn" onclick="setCapital(50000)">$50,000</div>
       </div>
     </div>
 
-    <!-- Halal / Shariah Filter -->
-    <div class="halal-glass-row">
-      <div class="halal-details">
+    <!-- Halal / Shariah Compliance Switch -->
+    <div class="halal-container">
+      <div class="halal-meta">
         <span class="halal-icon">🌙</span>
-        <div class="halal-text">
+        <div class="halal-info">
           <h4>Halal / Shariah Compliance Filter</h4>
-          <p>Filter interest-bearing protocols & unbacked leverage</p>
+          <p>Filters interest-bearing protocols & unbacked leverage</p>
         </div>
       </div>
       <label class="switch-toggle">
@@ -470,19 +605,19 @@
     </div>
   </div>
 
-  <!-- AI Information Glass Card -->
+  <!-- AI Institutional Information Card -->
   <div class="glass-card">
-    <div class="ai-live-card">
-      <div class="ai-icon-anim">⚡</div>
-      <div class="ai-card-text">
-        Powered by <strong>TRAD Institutional AI Engine</strong>. Automatically computes exact <strong>1% Risk Engine</strong> lot sizing & live <strong>RSI / EMA / ATR</strong> indicators.
+    <div class="ai-engine-banner">
+      <div class="ai-sparkle">🧠</div>
+      <div class="ai-banner-text">
+        Powered by <strong>TRAD Institutional AI &amp; 1% Quant Risk Engine</strong>. Computes real-time EMA alignment, RSI, ATR, and strict stop-loss lot sizes.
       </div>
     </div>
   </div>
 
-  <!-- Standalone Browser Fallback Button -->
-  <button id="fallbackBtn" class="fallback-btn">
-    🚀 Analyze Market & Calculate Risk
+  <!-- Standalone Browser Fallback Submit Button -->
+  <button id="fallbackBtn" class="btn-action-submit" style="display: none;">
+    🚀 ANALYZE & CALCULATE 1% RISK
   </button>
 
   <script>
@@ -494,11 +629,12 @@
       tg.expand();
     }
 
-    // Asset Lists
+    // Comprehensive Asset Preset Categories
     const assetCategories = {
-      crypto: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT'],
-      forex: ['XAU/USD', 'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD'],
-      us_stocks: ['NVDA', 'TSLA', 'AAPL', 'NAS100', 'US30', 'SPX500', 'AMZN', 'MSFT']
+      crypto: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'AVAX/USDT'],
+      forex: ['XAU/USD', 'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'USD/CHF', 'XAG/USD'],
+      us_stocks: ['NVDA', 'TSLA', 'AAPL', 'NAS100', 'US30', 'SPX500', 'AMZN', 'MSFT', 'META', 'GOOGL'],
+      energy: ['USOIL', 'BRENT', 'NATGAS', 'COPPER']
     };
 
     let currentCategory = 'crypto';
@@ -507,36 +643,41 @@
       const container = document.getElementById('chipsContainer');
       container.innerHTML = '';
       const list = assetCategories[catKey] || [];
-      list.forEach((symbol, idx) => {
+      list.forEach((symbol) => {
         const btn = document.createElement('div');
-        btn.className = 'chip-btn' + (symbol === pairInput.value ? ' active' : '');
+        btn.className = 'symbol-chip' + (symbol === pairInput.value ? ' active' : '');
         btn.innerText = symbol;
         btn.onclick = () => selectSymbol(symbol, btn);
         container.appendChild(btn);
       });
     }
 
-    function switchCategory(catKey) {
+    function switchCategory(catKey, el) {
       currentCategory = catKey;
-      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-      if (event && event.target) event.target.classList.add('active');
+      document.querySelectorAll('.pill-btn').forEach(t => t.classList.remove('active'));
+      if (el) el.classList.add('active');
       renderChips(catKey);
     }
 
     function selectSymbol(sym, el) {
       document.getElementById('pairInput').value = sym;
-      document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.symbol-chip').forEach(c => c.classList.remove('active'));
       if (el) el.classList.add('active');
       validateAndShowButton();
     }
 
-    // Strategy Button Listeners
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedStyle = btn.getAttribute('data-style');
+    function setCapital(amount) {
+      document.getElementById('budgetInput').value = amount;
+      validateAndShowButton();
+    }
+
+    // Strategy Button Selection Listeners
+    const strategyCards = document.querySelectorAll('.strategy-card');
+    strategyCards.forEach(card => {
+      card.addEventListener('click', () => {
+        strategyCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedStyle = card.getAttribute('data-style');
         validateAndShowButton();
       });
     });
@@ -582,7 +723,7 @@
         tg.sendData(jsonString);
         tg.close();
       } else {
-        alert('Payload Sent:\n' + JSON.stringify(payload, null, 2));
+        alert('TRAD AI Payload Sent:\n' + JSON.stringify(payload, null, 2));
       }
     }
 
@@ -593,7 +734,7 @@
     if (tg && tg.MainButton) tg.MainButton.onClick(submitData);
     fallbackBtn.addEventListener('click', submitData);
 
-    // Init
+    // Initial Load
     renderChips('crypto');
     validateAndShowButton();
   </script>
