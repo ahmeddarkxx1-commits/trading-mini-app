@@ -45,7 +45,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      padding-bottom: 24px;
+      padding-bottom: 30px;
     }
 
     /* VIP Top Status Banner */
@@ -473,7 +473,7 @@
       50% { transform: scale(1.12); opacity: 1; }
     }
 
-    /* Primary Action Button (Fallback for Standalone Browsers) */
+    /* Primary Action Button - ALWAYS VISIBLE IN PAGE BODY */
     .btn-action-submit {
       width: 100%;
       background: linear-gradient(135deg, #38bdf8, #818cf8);
@@ -493,6 +493,7 @@
       transition: all 0.25s ease;
       position: relative;
       overflow: hidden;
+      margin-top: 4px;
     }
 
     .btn-action-submit:active {
@@ -615,14 +616,15 @@
     </div>
   </div>
 
-  <!-- Standalone Browser Fallback Submit Button -->
-  <button id="fallbackBtn" class="btn-action-submit" style="display: none;">
+  <!-- In-Page Glowing Action Button (Always Accessible inside HTML body) -->
+  <button id="actionBtn" class="btn-action-submit">
     🚀 ANALYZE & CALCULATE 1% RISK
   </button>
 
   <script>
     const tg = window.Telegram?.WebApp;
     let selectedStyle = 'Scalping';
+    let isSubmitting = false;
 
     if (tg) {
       tg.ready();
@@ -685,7 +687,7 @@
     const pairInput = document.getElementById('pairInput');
     const budgetInput = document.getElementById('budgetInput');
     const shariahToggle = document.getElementById('shariahToggle');
-    const fallbackBtn = document.getElementById('fallbackBtn');
+    const actionBtn = document.getElementById('actionBtn');
 
     function getPayload() {
       return {
@@ -709,30 +711,57 @@
           text_color: '#020617'
         });
 
-        if (isValid) tg.MainButton.show(); else tg.MainButton.hide();
-      } else {
-        fallbackBtn.style.display = isValid ? 'flex' : 'none';
+        if (isValid) {
+          tg.MainButton.show();
+          tg.MainButton.enable();
+        } else {
+          tg.MainButton.hide();
+        }
       }
+
+      actionBtn.style.display = isValid ? 'flex' : 'none';
     }
 
     function submitData() {
+      if (isSubmitting) return;
+      isSubmitting = true;
+
       const payload = getPayload();
       const jsonString = JSON.stringify(payload);
 
+      actionBtn.innerText = '⚡ ANALYZING MARKET & RISK...';
+      actionBtn.style.opacity = '0.7';
+
       if (tg && tg.sendData) {
-        tg.sendData(jsonString);
-        tg.close();
+        try {
+          tg.sendData(jsonString);
+        } catch (err) {
+          console.error("sendData error:", err);
+        }
+        setTimeout(() => {
+          try { tg.close(); } catch(e){}
+        }, 300);
       } else {
         alert('TRAD AI Payload Sent:\n' + JSON.stringify(payload, null, 2));
       }
+
+      setTimeout(() => {
+        isSubmitting = false;
+        actionBtn.innerText = '🚀 ANALYZE & CALCULATE 1% RISK';
+        actionBtn.style.opacity = '1';
+      }, 1500);
     }
 
     pairInput.addEventListener('input', validateAndShowButton);
     budgetInput.addEventListener('input', validateAndShowButton);
     shariahToggle.addEventListener('change', validateAndShowButton);
 
-    if (tg && tg.MainButton) tg.MainButton.onClick(submitData);
-    fallbackBtn.addEventListener('click', submitData);
+    if (tg && tg.MainButton) {
+      try { tg.MainButton.offClick(submitData); } catch(e){}
+      tg.MainButton.onClick(submitData);
+    }
+    
+    actionBtn.addEventListener('click', submitData);
 
     // Initial Load
     renderChips('crypto');
