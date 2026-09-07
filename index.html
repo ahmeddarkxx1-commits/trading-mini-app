@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TRAD | AI Co-Pilot & Institutional Trading Terminal</title>
+  <title>TRAD | AI Co-Pilot & Institutional Scalping Terminal</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #020617 100%);
-      --card-bg: rgba(15, 23, 42, 0.75);
+      --card-bg: rgba(15, 23, 42, 0.78);
       --card-border: rgba(255, 255, 255, 0.1);
-      --card-glow: rgba(56, 189, 248, 0.12);
+      --card-glow: rgba(56, 189, 248, 0.14);
       
       --cyan-neon: #38bdf8;
       --violet-neon: #818cf8;
@@ -25,14 +25,15 @@
       --text-sub: #cbd5e1;
       --text-muted: #64748b;
       
-      --input-bg: rgba(2, 6, 23, 0.75);
+      --input-bg: rgba(2, 6, 23, 0.85);
+      --font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: var(--font-family);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -44,21 +45,52 @@
       padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding-bottom: 30px;
+      gap: 12px;
+      padding-bottom: 35px;
     }
 
-    /* VIP Top Status Banner */
-    .vip-status-bar {
-      background: linear-gradient(90deg, rgba(251, 191, 36, 0.15), rgba(56, 189, 248, 0.15));
-      border: 1px solid rgba(251, 191, 36, 0.35);
+    body.ltr {
+      direction: ltr;
+      --font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Live Ticker Bar */
+    .ticker-wrap {
+      width: 100%;
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      backdrop-filter: blur(10px);
+    }
+
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 700;
+    }
+
+    .ticker-item .up { color: var(--emerald-neon); }
+    .ticker-item .down { color: var(--rose-neon); }
+
+    /* Top VIP Status Banner */
+    .vip-status-bar {
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.16), rgba(56, 189, 248, 0.16));
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 14px;
       padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.76rem;
+      font-weight: 800;
       color: var(--amber-gold);
       box-shadow: 0 0 15px rgba(251, 191, 36, 0.12);
     }
@@ -66,15 +98,15 @@
     .vip-badge {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .vip-ping {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       background-color: var(--amber-gold);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--amber-gold);
+      box-shadow: 0 0 10px var(--amber-gold);
       animation: pulsePing 1.5s infinite;
     }
 
@@ -82,6 +114,23 @@
       0% { transform: scale(0.9); opacity: 1; }
       50% { transform: scale(1.4); opacity: 0.5; }
       100% { transform: scale(0.9); opacity: 1; }
+    }
+
+    .lang-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .lang-toggle-btn:hover {
+      background: var(--cyan-neon);
+      color: #020617;
     }
 
     /* Glass Card Standard Container */
@@ -98,7 +147,6 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
       position: relative;
       overflow: hidden;
-      transition: border-color 0.3s ease;
     }
 
     .glass-card::before {
@@ -117,14 +165,14 @@
     }
 
     .app-avatar {
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       border-radius: 16px;
       background: linear-gradient(135deg, #0ea5e9, #6366f1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
+      font-size: 24px;
       box-shadow: 0 0 20px rgba(14, 165, 233, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.2);
       flex-shrink: 0;
@@ -149,7 +197,7 @@
     }
 
     .header-sub {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -172,18 +220,18 @@
 
     /* Section Headings */
     .section-title {
-      font-size: 0.74rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 800;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
     .section-title span.badge {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       color: var(--cyan-neon);
       background: rgba(56, 189, 248, 0.1);
       padding: 2px 8px;
@@ -191,7 +239,56 @@
       border: 1px solid rgba(56, 189, 248, 0.2);
     }
 
-    /* Strategy Selector Tabs Grid */
+    /* Quick Flash Scalp Banner Button */
+    .flash-scalp-banner {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
+    }
+
+    .flash-scalp-banner:active {
+      transform: scale(0.98);
+    }
+
+    .flash-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flash-icon {
+      font-size: 1.5rem;
+      animation: pulsePing 1.2s infinite;
+    }
+
+    .flash-text h4 {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--amber-gold);
+    }
+
+    .flash-text p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .flash-go-btn {
+      background: var(--amber-gold);
+      color: #020617;
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 6px 12px;
+      border-radius: 10px;
+    }
+
+    /* Strategy Tabs Grid */
     .strategy-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -205,7 +302,7 @@
       padding: 12px 6px;
       color: var(--text-sub);
       font-size: 0.82rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -220,10 +317,6 @@
       font-weight: 500;
     }
 
-    .strategy-card:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
     .strategy-card.active {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(129, 140, 248, 0.18));
       border-color: var(--cyan-neon);
@@ -236,7 +329,7 @@
       font-weight: 600;
     }
 
-    /* Custom Input Fields */
+    /* Input Fields */
     .input-field-box {
       display: flex;
       flex-direction: column;
@@ -251,10 +344,15 @@
 
     .input-icon {
       position: absolute;
-      left: 14px;
+      right: 14px;
       font-size: 1.1rem;
       color: var(--text-muted);
       pointer-events: none;
+    }
+
+    body.ltr .input-icon {
+      right: auto;
+      left: 14px;
     }
 
     .styled-input {
@@ -262,7 +360,7 @@
       background: var(--input-bg);
       border: 1px solid var(--card-border);
       border-radius: 14px;
-      padding: 14px 14px 14px 44px;
+      padding: 14px 44px 14px 14px;
       color: var(--text-main);
       font-size: 0.95rem;
       font-weight: 700;
@@ -271,13 +369,16 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    body.ltr .styled-input {
+      padding: 14px 14px 14px 44px;
+    }
+
     .styled-input:focus {
       border-color: var(--cyan-neon);
       box-shadow: 0 0 16px var(--card-glow);
-      background: rgba(15, 23, 42, 0.95);
     }
 
-    /* Asset Category Pills & Chips */
+    /* Category Pills & Symbol Chips */
     .category-pills {
       display: flex;
       gap: 6px;
@@ -286,9 +387,7 @@
       scrollbar-width: none;
     }
 
-    .category-pills::-webkit-scrollbar {
-      display: none;
-    }
+    .category-pills::-webkit-scrollbar { display: none; }
 
     .pill-btn {
       background: rgba(255, 255, 255, 0.04);
@@ -296,7 +395,7 @@
       border-radius: 20px;
       padding: 5px 12px;
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       white-space: nowrap;
@@ -350,7 +449,7 @@
       border-radius: 10px;
       padding: 5px 0;
       font-size: 0.7rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       text-align: center;
@@ -361,6 +460,27 @@
       border-color: var(--violet-neon);
       color: var(--violet-neon);
     }
+
+    /* Live Risk & Lot Calculation Badge */
+    .risk-calc-card {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.76rem;
+    }
+
+    .risk-calc-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .risk-calc-item .title { color: var(--text-muted); font-size: 0.68rem; }
+    .risk-calc-item .val { color: var(--emerald-neon); font-weight: 800; font-family: 'JetBrains Mono', monospace; }
 
     /* Halal Glass Switch Row */
     .halal-container {
@@ -386,7 +506,7 @@
 
     .halal-info h4 {
       font-size: 0.84rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--emerald-neon);
     }
 
@@ -405,11 +525,7 @@
       flex-shrink: 0;
     }
 
-    .switch-toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .switch-toggle input { opacity: 0; width: 0; height: 0; }
 
     .slider-round {
       position: absolute;
@@ -426,11 +542,16 @@
       content: "";
       height: 18px;
       width: 18px;
-      left: 2px;
+      right: 2px;
       bottom: 2px;
       background-color: #ffffff;
       transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 50%;
+    }
+
+    body.ltr .slider-round:before {
+      right: auto;
+      left: 2px;
     }
 
     input:checked + .slider-round {
@@ -439,10 +560,14 @@
     }
 
     input:checked + .slider-round:before {
+      transform: translateX(-20px);
+    }
+
+    body.ltr input:checked + .slider-round:before {
       transform: translateX(20px);
     }
 
-    /* Institutional AI Badge Footer */
+    /* AI Institutional Banner */
     .ai-engine-banner {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(129, 140, 248, 0.08));
       border: 1px dashed rgba(56, 189, 248, 0.3);
@@ -453,27 +578,16 @@
       gap: 12px;
     }
 
-    .ai-sparkle {
-      font-size: 1.5rem;
-      animation: pulseGlow 2.2s infinite ease-in-out;
-    }
-
-    .ai-banner-text {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-    }
-
-    .ai-banner-text strong {
-      color: var(--cyan-neon);
-    }
+    .ai-sparkle { font-size: 1.5rem; animation: pulseGlow 2.2s infinite ease-in-out; }
+    .ai-banner-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.45; }
+    .ai-banner-text strong { color: var(--cyan-neon); }
 
     @keyframes pulseGlow {
       0%, 100% { transform: scale(1); opacity: 0.85; }
       50% { transform: scale(1.12); opacity: 1; }
     }
 
-    /* Primary Action Button - ALWAYS VISIBLE IN PAGE BODY */
+    /* Action Button */
     .btn-action-submit {
       width: 100%;
       background: linear-gradient(135deg, #38bdf8, #818cf8);
@@ -482,7 +596,7 @@
       border-radius: 16px;
       padding: 16px;
       font-size: 0.98rem;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.2px;
       cursor: pointer;
       display: flex;
@@ -491,95 +605,106 @@
       gap: 8px;
       box-shadow: 0 6px 25px rgba(56, 189, 248, 0.35);
       transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
       margin-top: 4px;
     }
 
-    .btn-action-submit:active {
-      transform: scale(0.98);
-      box-shadow: 0 2px 12px rgba(56, 189, 248, 0.2);
-    }
+    .btn-action-submit:active { transform: scale(0.98); }
   </style>
 </head>
 <body>
 
-  <!-- VIP Institutional Status Banner -->
+  <!-- Live Market Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker-item">🥇 XAUUSD: <span class="up">2645.80 (+0.42%)</span></div>
+    <div class="ticker-item">₿ BTCUSD: <span class="up">94120.00 (+1.15%)</span></div>
+    <div class="ticker-item">💶 EURUSD: <span class="down">1.0482 (-0.08%)</span></div>
+  </div>
+
+  <!-- VIP Status Banner & Language Toggle -->
   <div class="vip-status-bar">
     <div class="vip-badge">
       <span class="vip-ping"></span>
-      <span>TRAD VIP INSTITUTIONAL TERMINAL v2.5</span>
+      <span id="txtVipStatus">TRAD VIP INSTITUTIONAL TERMINAL v3.0</span>
     </div>
-    <span>MT5 & 24/7 LIVE</span>
+    <button class="lang-toggle-btn" onclick="toggleLanguage()">🌐 EN | العربية</button>
   </div>
 
   <!-- Header -->
   <div class="glass-card header">
     <div class="app-avatar">🤖</div>
     <div class="header-info">
-      <div class="header-title">TRAD | AI Co-Pilot</div>
+      <div class="header-title" id="txtAppTitle">TRAD | المساعد الذكي للتداول</div>
       <div class="header-sub">
         <span class="live-indicator"></span>
-        <span>Institutional Multi-AI Consensus Engine</span>
+        <span id="txtAppSub">محرك التحليل الفني والسيولة المؤسسية MT5</span>
       </div>
     </div>
   </div>
 
-  <!-- Trading Configuration Glass Card -->
+  <!-- Quick Flash Scalp Banner -->
+  <div class="flash-scalp-banner" onclick="triggerFlashScalp()">
+    <div class="flash-banner-left">
+      <span class="flash-icon">⚡</span>
+      <div class="flash-text">
+        <h4 id="txtFlashTitle">رادار الخطف السريع والسيولة اللحظية</h4>
+        <p id="txtFlashSub">فحص كاسح للصفقات الخاطفة (1m - 5m) فورا</p>
+      </div>
+    </div>
+    <span class="flash-go-btn" id="txtFlashBtn">افحص الآن 🚀</span>
+  </div>
+
+  <!-- Main Trading Config Glass Card -->
   <div class="glass-card">
     <div class="section-title">
-      <span>🎯 Trading Style & Timeframe</span>
-      <span class="badge">Dynamic Risk</span>
+      <span id="txtStyleTitle">🎯 نمط التداول والإطار الزمني</span>
+      <span class="badge" id="txtRiskBadge">إدارة مخاطر ديناميكية</span>
     </div>
     
     <div class="strategy-grid">
-      <button type="button" class="strategy-card active" data-style="Scalping">
-        <span>⚡ Scalp</span>
+      <button type="button" class="strategy-card active" data-style="Scalping" onclick="haptic()">
+        <span id="txtStyleScalp">⚡ خاطف (Scalp)</span>
         <span class="timeframe-text">1m / 5m</span>
       </button>
-      <button type="button" class="strategy-card" data-style="Day Trading">
-        <span>📈 Day</span>
+      <button type="button" class="strategy-card" data-style="Day Trading" onclick="haptic()">
+        <span id="txtStyleDay">📈 يومي (Day)</span>
         <span class="timeframe-text">15m / 1h</span>
       </button>
-      <button type="button" class="strategy-card" data-style="Swing">
-        <span>🌊 Swing</span>
+      <button type="button" class="strategy-card" data-style="Swing" onclick="haptic()">
+        <span id="txtStyleSwing">🌊 سوينج (Swing)</span>
         <span class="timeframe-text">4h / 1D</span>
       </button>
     </div>
 
-    <!-- Asset Selection Input -->
+    <!-- Asset Selector -->
     <div class="input-field-box">
       <div class="section-title">
-        <span>💱 Symbol / Asset</span>
-        <span class="badge">Spot & MT5</span>
+        <span id="txtSymbolTitle">💱 الزوج / أداة التداول</span>
+        <span class="badge">MT5 & Live Spot</span>
       </div>
       <div class="input-wrapper">
         <span class="input-icon">🔍</span>
-        <input type="text" id="pairInput" class="styled-input" placeholder="BTC/USDT, XAU/USD, NVDA, US30" value="BTC/USDT">
+        <input type="text" id="pairInput" class="styled-input" placeholder="BTC/USDT, XAU/USD, EUR/USD, US30" value="BTC/USDT">
       </div>
 
-      <!-- Asset Category Pills & Quick Symbol Chips -->
       <div class="category-pills" style="margin-top: 6px;">
-        <div class="pill-btn active" onclick="switchCategory('crypto', this)">Crypto 🪙</div>
-        <div class="pill-btn" onclick="switchCategory('forex', this)">Forex & Gold 🏆</div>
-        <div class="pill-btn" onclick="switchCategory('us_stocks', this)">US Stocks & Indices 🇺🇸</div>
-        <div class="pill-btn" onclick="switchCategory('energy', this)">Oil & Commodities 🛢️</div>
+        <div class="pill-btn active" onclick="switchCategory('crypto', this)" id="pillCrypto">الكريبتو 🪙</div>
+        <div class="pill-btn" onclick="switchCategory('forex', this)" id="pillForex">الفوركس والذهب 🏆</div>
+        <div class="pill-btn" onclick="switchCategory('us_stocks', this)" id="pillStocks">الأسهم والمؤشرات 🇺🇸</div>
+        <div class="pill-btn" onclick="switchCategory('energy', this)" id="pillEnergy">النفط والمعادن 🛢️</div>
       </div>
 
-      <div id="chipsContainer" class="symbols-chips-flex">
-        <!-- Dynamically rendered chips -->
-      </div>
+      <div id="chipsContainer" class="symbols-chips-flex"></div>
     </div>
 
-    <!-- Capital / Budget Input -->
+    <!-- Capital Input -->
     <div class="input-field-box">
       <div class="section-title">
-        <span>💰 Account Capital ($)</span>
-        <span class="badge">1% Protection</span>
+        <span id="txtCapitalTitle">💰 رأس مال الحساب ($)</span>
+        <span class="badge" id="txtCapitalBadge">حماية 1% صارمة</span>
       </div>
       <div class="input-wrapper">
         <span class="input-icon">💵</span>
-        <input type="number" id="budgetInput" class="styled-input" placeholder="1000" value="1000" min="10">
+        <input type="number" id="budgetInput" class="styled-input" placeholder="1000" value="1000" min="10" oninput="updateRiskCalc()">
       </div>
       <div class="capital-presets">
         <div class="preset-btn" onclick="setCapital(500)">$500</div>
@@ -590,48 +715,165 @@
       </div>
     </div>
 
-    <!-- Halal / Shariah Compliance Switch -->
+    <!-- Live Risk & Recommended Lot Size Card -->
+    <div class="risk-calc-card">
+      <div class="risk-calc-item">
+        <span class="title" id="txtRiskLimitTitle">أقصى مخاطرة مسموحة (1%)</span>
+        <span class="val" id="lblMaxRisk">$10.00</span>
+      </div>
+      <div class="risk-calc-item">
+        <span class="title" id="txtLotEstTitle">اللوت التقديري الموصى به</span>
+        <span class="val" id="lblEstLot">0.05 Lot</span>
+      </div>
+    </div>
+
+    <!-- Shariah Switch -->
     <div class="halal-container">
       <div class="halal-meta">
         <span class="halal-icon">🌙</span>
         <div class="halal-info">
-          <h4>Halal / Shariah Compliance Filter</h4>
-          <p>Filters interest-bearing protocols & unbacked leverage</p>
+          <h4 id="txtHalalTitle">فلترة الحساب الإسلامي (الشريعة)</h4>
+          <p id="txtHalalSub">تصفية الفوائد الربوية (SWAP) والتداول غير المدعوم</p>
         </div>
       </div>
       <label class="switch-toggle">
-        <input type="checkbox" id="shariahToggle" checked>
+        <input type="checkbox" id="shariahToggle" checked onclick="haptic()">
         <span class="slider-round"></span>
       </label>
     </div>
   </div>
 
-  <!-- AI Institutional Information Card -->
+  <!-- AI Institutional Info -->
   <div class="glass-card">
     <div class="ai-engine-banner">
       <div class="ai-sparkle">🧠</div>
-      <div class="ai-banner-text">
-        Powered by <strong>TRAD Institutional AI &amp; 1% Quant Risk Engine</strong>. Computes real-time EMA alignment, RSI, ATR, and strict stop-loss lot sizes.
+      <div class="ai-banner-text" id="txtAiBanner">
+        مدعوم بنظام <strong>TRAD AI Institutional Risk Engine</strong>. يحسب محاذاة المتوسطات المتحركة EMA والزخم وقوة الكسر مع تحديد ستوب لوز دقيق.
       </div>
     </div>
   </div>
 
-  <!-- In-Page Glowing Action Button (Always Accessible inside HTML body) -->
-  <button id="actionBtn" class="btn-action-submit">
-    🚀 ANALYZE & CALCULATE 1% RISK
+  <!-- Primary Action Submit Button -->
+  <button id="actionBtn" class="btn-action-submit" onclick="submitData()">
+    🚀 تحليل السوق وحساب مخاطرة 1%
   </button>
 
   <script>
     const tg = window.Telegram?.WebApp;
     let selectedStyle = 'Scalping';
     let isSubmitting = false;
+    let currentLang = localStorage.getItem('trad_lang') || 'ar';
 
     if (tg) {
       tg.ready();
       tg.expand();
     }
 
-    // Comprehensive Asset Preset Categories
+    function haptic() {
+      if (tg && tg.HapticFeedback) {
+        try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
+      }
+    }
+
+    const dict = {
+      ar: {
+        dir: 'rtl',
+        appTitle: 'TRAD | المساعد الذكي للتداول',
+        appSub: 'محرك التحليل الفني والسيولة المؤسسية MT5',
+        flashTitle: 'رادار الخطف السريع والسيولة اللحظية',
+        flashSub: 'فحص كاسح للصفقات الخاطفة (1m - 5m) فورا',
+        flashBtn: 'افحص الآن 🚀',
+        styleTitle: '🎯 نمط التداول والإطار الزمني',
+        riskBadge: 'إدارة مخاطر ديناميكية',
+        scalp: '⚡ خاطف (Scalp)',
+        day: '📈 يومي (Day)',
+        swing: '🌊 سوينج (Swing)',
+        symbolTitle: '💱 الزوج / أداة التداول',
+        crypto: 'الكريبتو 🪙',
+        forex: 'الفوركس والذهب 🏆',
+        stocks: 'الأسهم والمؤشرات 🇺🇸',
+        energy: 'النفط والمعادن 🛢️',
+        capitalTitle: '💰 رأس مال الحساب ($)',
+        capitalBadge: 'حماية 1% صارمة',
+        riskLimitTitle: 'أقصى مخاطرة مسموحة (1%)',
+        lotEstTitle: 'اللوت التقديري الموصى به',
+        halalTitle: 'فلترة الحساب الإسلامي (الشريعة)',
+        halalSub: 'تصفية الفوائد الربوية (SWAP) والتداول غير المدعوم',
+        aiBanner: 'مدعوم بنظام <strong>TRAD AI Institutional Risk Engine</strong>. يحسب محاذاة المتوسطات المتحركة EMA والزخم وقوة الكسر مع تحديد ستوب لوز دقيق.',
+        submitBtn: '🚀 تحليل السوق وحساب مخاطرة 1%',
+        analyzingBtn: '⚡ جاري فحص وتحليل السوق والرادار...'
+      },
+      en: {
+        dir: 'ltr',
+        appTitle: 'TRAD | AI Co-Pilot Terminal',
+        appSub: 'Institutional Technical & MT5 Liquidity Engine',
+        flashTitle: 'Flash Scalp & Liquidity Radar',
+        flashSub: 'Instant scanning for 1m - 5m high-liquidity breakouts',
+        flashBtn: 'Scan Now 🚀',
+        styleTitle: '🎯 Trading Style & Timeframe',
+        riskBadge: 'Dynamic Risk Engine',
+        scalp: '⚡ Scalp (1m/5m)',
+        day: '📈 Day (15m/1h)',
+        swing: '🌊 Swing (4h/1D)',
+        symbolTitle: '💱 Symbol / Instrument',
+        crypto: 'Crypto 🪙',
+        forex: 'Forex & Gold 🏆',
+        stocks: 'US Stocks & Indices 🇺🇸',
+        energy: 'Oil & Commodities 🛢️',
+        capitalTitle: '💰 Account Capital ($)',
+        capitalBadge: 'Strict 1% Protection',
+        riskLimitTitle: 'Max Allowed Risk (1%)',
+        lotEstTitle: 'Est. Recommended Lot Size',
+        halalTitle: 'Halal / Shariah Compliance Filter',
+        halalSub: 'Filters interest-bearing swaps & unbacked leverage',
+        aiBanner: 'Powered by <strong>TRAD Institutional Risk Engine</strong>. Computes real-time EMA alignment, RSI, ATR, and strict lot sizing.',
+        submitBtn: '🚀 ANALYZE MARKET & 1% RISK',
+        analyzingBtn: '⚡ ANALYZING MARKET & RISK...'
+      }
+    };
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('trad_lang', lang);
+      const d = dict[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.dir = d.dir;
+      if (lang === 'en') {
+        document.body.classList.add('ltr');
+      } else {
+        document.body.classList.remove('ltr');
+      }
+
+      document.getElementById('txtAppTitle').innerText = d.appTitle;
+      document.getElementById('txtAppSub').innerText = d.appSub;
+      document.getElementById('txtFlashTitle').innerText = d.flashTitle;
+      document.getElementById('txtFlashSub').innerText = d.flashSub;
+      document.getElementById('txtFlashBtn').innerText = d.flashBtn;
+      document.getElementById('txtStyleTitle').innerText = d.styleTitle;
+      document.getElementById('txtRiskBadge').innerText = d.riskBadge;
+      document.getElementById('txtStyleScalp').innerText = d.scalp;
+      document.getElementById('txtStyleDay').innerText = d.day;
+      document.getElementById('txtStyleSwing').innerText = d.swing;
+      document.getElementById('txtSymbolTitle').innerText = d.symbolTitle;
+      document.getElementById('pillCrypto').innerText = d.crypto;
+      document.getElementById('pillForex').innerText = d.forex;
+      document.getElementById('pillStocks').innerText = d.stocks;
+      document.getElementById('pillEnergy').innerText = d.energy;
+      document.getElementById('txtCapitalTitle').innerText = d.capitalTitle;
+      document.getElementById('txtCapitalBadge').innerText = d.capitalBadge;
+      document.getElementById('txtRiskLimitTitle').innerText = d.riskLimitTitle;
+      document.getElementById('txtLotEstTitle').innerText = d.lotEstTitle;
+      document.getElementById('txtHalalTitle').innerText = d.halalTitle;
+      document.getElementById('txtHalalSub').innerText = d.halalSub;
+      document.getElementById('txtAiBanner').innerHTML = d.aiBanner;
+      document.getElementById('actionBtn').innerText = d.submitBtn;
+    }
+
+    function toggleLanguage() {
+      haptic();
+      applyLanguage(currentLang === 'ar' ? 'en' : 'ar');
+    }
+
     const assetCategories = {
       crypto: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'ADA/USDT', 'AVAX/USDT'],
       forex: ['XAU/USD', 'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'USD/CHF', 'XAG/USD'],
@@ -655,6 +897,7 @@
     }
 
     function switchCategory(catKey, el) {
+      haptic();
       currentCategory = catKey;
       document.querySelectorAll('.pill-btn').forEach(t => t.classList.remove('active'));
       if (el) el.classList.add('active');
@@ -662,25 +905,43 @@
     }
 
     function selectSymbol(sym, el) {
+      haptic();
       document.getElementById('pairInput').value = sym;
       document.querySelectorAll('.symbol-chip').forEach(c => c.classList.remove('active'));
       if (el) el.classList.add('active');
-      validateAndShowButton();
+      updateRiskCalc();
     }
 
     function setCapital(amount) {
+      haptic();
       document.getElementById('budgetInput').value = amount;
-      validateAndShowButton();
+      updateRiskCalc();
     }
 
-    // Strategy Button Selection Listeners
+    function updateRiskCalc() {
+      const budgetVal = parseFloat(document.getElementById('budgetInput').value) || 0;
+      const maxRisk = budgetVal * 0.01;
+      document.getElementById('lblMaxRisk').innerText = `$${maxRisk.toFixed(2)}`;
+
+      const pair = document.getElementById('pairInput').value.toUpperCase();
+      let estLot = 0.01;
+      if (pair.includes('XAU') || pair.includes('GOLD')) {
+        estLot = Math.max(0.01, (maxRisk / 200)).toFixed(2);
+      } else if (pair.includes('BTC')) {
+        estLot = Math.max(0.01, (maxRisk / 400)).toFixed(2);
+      } else {
+        estLot = Math.max(0.01, (maxRisk / 150)).toFixed(2);
+      }
+      document.getElementById('lblEstLot').innerText = `${estLot} Lot`;
+    }
+
     const strategyCards = document.querySelectorAll('.strategy-card');
     strategyCards.forEach(card => {
       card.addEventListener('click', () => {
+        haptic();
         strategyCards.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
         selectedStyle = card.getAttribute('data-style');
-        validateAndShowButton();
       });
     });
 
@@ -689,83 +950,51 @@
     const shariahToggle = document.getElementById('shariahToggle');
     const actionBtn = document.getElementById('actionBtn');
 
-    function getPayload() {
-      return {
+    function triggerFlashScalp() {
+      haptic();
+      const payload = { action: "FLASH_SCALP" };
+      if (tg && tg.sendData) {
+        tg.sendData(JSON.stringify(payload));
+        setTimeout(() => { try { tg.close(); } catch(e){} }, 300);
+      } else {
+        alert("⚡ Flash Scalp Payload Sent:\n" + JSON.stringify(payload, null, 2));
+      }
+    }
+
+    function submitData() {
+      if (isSubmitting) return;
+      haptic();
+      isSubmitting = true;
+
+      const payload = {
         action: "ANALYZE_TRADE",
         strategy: selectedStyle,
         pair: pairInput.value.trim().toUpperCase() || 'BTC/USDT',
         budget: parseFloat(budgetInput.value) || 1000,
         shariah_aware: shariahToggle ? shariahToggle.checked : true
       };
-    }
 
-    function validateAndShowButton() {
-      const budgetVal = parseFloat(budgetInput.value);
-      const pairVal = pairInput.value.trim();
-      const isValid = pairVal.length > 0 && !isNaN(budgetVal) && budgetVal > 0;
-
-      if (tg && tg.MainButton) {
-        tg.MainButton.setText('🚀 ANALYZE & CALCULATE 1% RISK');
-        tg.MainButton.setParams({
-          color: '#38bdf8',
-          text_color: '#020617'
-        });
-
-        if (isValid) {
-          tg.MainButton.show();
-          tg.MainButton.enable();
-        } else {
-          tg.MainButton.hide();
-        }
-      }
-
-      actionBtn.style.display = isValid ? 'flex' : 'none';
-    }
-
-    function submitData() {
-      if (isSubmitting) return;
-      isSubmitting = true;
-
-      const payload = getPayload();
-      const jsonString = JSON.stringify(payload);
-
-      actionBtn.innerText = '⚡ ANALYZING MARKET & RISK...';
-      actionBtn.style.opacity = '0.7';
+      actionBtn.innerText = dict[currentLang].analyzingBtn;
+      actionBtn.style.opacity = '0.75';
 
       if (tg && tg.sendData) {
-        try {
-          tg.sendData(jsonString);
-        } catch (err) {
-          console.error("sendData error:", err);
-        }
-        setTimeout(() => {
-          try { tg.close(); } catch(e){}
-        }, 300);
+        try { tg.sendData(JSON.stringify(payload)); } catch(err) {}
+        setTimeout(() => { try { tg.close(); } catch(e){} }, 300);
       } else {
         alert('TRAD AI Payload Sent:\n' + JSON.stringify(payload, null, 2));
       }
 
       setTimeout(() => {
         isSubmitting = false;
-        actionBtn.innerText = '🚀 ANALYZE & CALCULATE 1% RISK';
+        actionBtn.innerText = dict[currentLang].submitBtn;
         actionBtn.style.opacity = '1';
       }, 1500);
     }
 
-    pairInput.addEventListener('input', validateAndShowButton);
-    budgetInput.addEventListener('input', validateAndShowButton);
-    shariahToggle.addEventListener('change', validateAndShowButton);
-
-    if (tg && tg.MainButton) {
-      try { tg.MainButton.offClick(submitData); } catch(e){}
-      tg.MainButton.onClick(submitData);
-    }
-    
-    actionBtn.addEventListener('click', submitData);
-
-    // Initial Load
+    // Initial Setup
+    applyLanguage(currentLang);
     renderChips('crypto');
-    validateAndShowButton();
+    updateRiskCalc();
   </script>
 </body>
 </html>
